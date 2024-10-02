@@ -1,30 +1,29 @@
 from machine import Pin
 import time
 
-# Setup LED and button
-led1 = Pin(16, Pin.OUT)  # LED connected to GP16 (LED1)
-sw5 = Pin(22, Pin.IN, Pin.PULL_DOWN)  # Button connected to GPIO 22
+# Setup LED on GPIO 16 and Button on GPIO 22
+led1 = Pin(16, Pin.OUT)
+sw5 = Pin(22, Pin.IN, Pin.PULL_DOWN)
 
-# Initialize state variables
-led_state = False  # Start with LED off
+# Variables to store the LED state and debounce delay
+led_state = False
 previous_button_state = 0
 debounce_delay = 200  # 200 ms debounce delay
 last_debounce_time = time.ticks_ms()
 
 while True:
+    # Read the button state
     current_button_state = sw5.value()
 
-    # If button state has changed
+    # Check if the button state changed and debounce
     if current_button_state != previous_button_state:
-        last_debounce_time = time.ticks_ms()  # Reset the debounce timer
+        last_debounce_time = time.ticks_ms()
 
-    # If enough time has passed since the last debounce
     if (time.ticks_ms() - last_debounce_time) > debounce_delay:
+        # Toggle the LED state when the button is pressed
         if current_button_state == 1 and previous_button_state == 0:
-            led_state = not led_state  # Toggle the LED state
-            print("LED Toggled: ", led_state)  # Debug to show LED state change
+            led_state = not led_state
 
-    # Set LED state based on toggled value
+    # Set the LED based on the state
     led1.value(led_state)
-
     previous_button_state = current_button_state
